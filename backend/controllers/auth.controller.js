@@ -22,8 +22,8 @@ export const signup = async (req, res) => {
 
 		// https://avatar-placeholder.iran.liara.run/
 
-		const boyProfilePic = `https://avatar.iran.liara.run/public/boy?username=${username}`;
-		const girlProfilePic = `https://avatar.iran.liara.run/public/girl?username=${username}`;
+		const boyProfilePic = `https://avatar.iran.liara.run/public/boy?username=${ username }`;
+		const girlProfilePic = `https://avatar.iran.liara.run/public/girl?username=${ username }`;
 
 		const newUser = new User({
 			fullName,
@@ -63,13 +63,15 @@ export const login = async (req, res) => {
 			return res.status(400).json({ error: "Invalid username or password" });
 		}
 
-		generateTokenAndSetCookie(user._id, res);
+		const token = generateTokenAndSetCookie(user._id, res);
+		console.log("token:", token)
 
 		res.status(200).json({
 			_id: user._id,
 			fullName: user.fullName,
 			username: user.username,
 			profilePic: user.profilePic,
+			token: token
 		});
 	} catch (error) {
 		console.log("Error in login controller", error.message);
@@ -86,3 +88,32 @@ export const logout = (req, res) => {
 		res.status(500).json({ error: "Internal Server Error" });
 	}
 };
+
+export const updateProfilePicture = async (req, res) => {
+	try {
+		const user = await User.findById(req.user.id);
+		if (!user) {
+			return res.status(404).json({ status: 'fail', message: 'User not found' });
+		}
+
+		// Update user's profile picture field
+		user.profilePic = req.file.filename;  // Assuming req.file is correctly populated by multer
+		await user.save({ validateBeforeSave: false });
+
+		// Respond with success status and updated user data
+		res.status(200).json({
+			status: 'success',
+			data: {
+				user,
+			}
+		});
+	} catch (err) {
+		// Handle any errors that occur during the process
+		res.status(400).json({
+			status: 'fail',
+			message: err.message
+		});
+	}
+}
+
+
