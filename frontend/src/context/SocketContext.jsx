@@ -16,7 +16,7 @@ export const SocketContextProvider = ({ children }) => {
 
 	useEffect(() => {
 		if (authUser) {
-			const socket = io("http://localhost:3000/", {
+			const socket = io("hhttps://chat-app-zxxt.onrender.com", {
 				query: {
 					userId: authUser._id,
 				},
@@ -35,7 +35,7 @@ export const SocketContextProvider = ({ children }) => {
 			return () => socket.close();
 		} else {
 			const visitorId = `visitor_${Math.random().toString(36).substring(2, 15)}`;
-			const socket = io("http://localhost:3000/", {
+			const socket = io("https://chat-app-zxxt.onrender.com", {
 				query: {
 					visitorId,
 				},
@@ -48,7 +48,7 @@ export const SocketContextProvider = ({ children }) => {
 			});
 
 			console.log("onlıne users:", onlineUsers)
-			console.log("vistors users:",onlineVisitors)
+			console.log("onlıne users:",onlineUsers)
 
 
 			return () => socket.close();
