@@ -71,7 +71,8 @@ export const login = async (req, res) => {
 			fullName: user.fullName,
 			username: user.username,
 			profilePic: user.profilePic,
-			token: token
+			token: token,
+			role: user.role
 		});
 	} catch (error) {
 		console.log("Error in login controller", error.message);
@@ -89,31 +90,28 @@ export const logout = (req, res) => {
 	}
 };
 
+
 export const updateProfilePicture = async (req, res) => {
 	try {
-		const user = await User.findById(req.user.id);
-		if (!user) {
-			return res.status(404).json({ status: 'fail', message: 'User not found' });
+		const userId = req.user.id;
+		const profilePic = `/images/${ req.file.filename }`;
+
+		// Assuming you have a User model and update logic
+		const user = await User.findByIdAndUpdate(userId, { profilePic }, { new: true });
+
+		res.json({ user });
+	} catch (error) {
+		res.status(500).json({ message: 'Failed to update profile picture' });
+	}
+};
+
+export const restrictTo = (...roles) => {
+	return (req, res, next) => {
+
+		// roles is an array [USER,ADMIN]
+		if (!roles.includes(req.user.role)) {
+			return next(new Error("you dont ave permission to perform this action", 403))
 		}
-
-		// Update user's profile picture field
-		user.profilePic = req.file.filename;  // Assuming req.file is correctly populated by multer
-		await user.save({ validateBeforeSave: false });
-
-		// Respond with success status and updated user data
-		res.status(200).json({
-			status: 'success',
-			data: {
-				user,
-			}
-		});
-	} catch (err) {
-		// Handle any errors that occur during the process
-		res.status(400).json({
-			status: 'fail',
-			message: err.message
-		});
+		next();
 	}
 }
-
-

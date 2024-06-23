@@ -1,4 +1,5 @@
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import path from "path";
@@ -13,23 +14,34 @@ import { app, server } from "./socket/socket.js";
 dotenv.config();
 
 const __dirname = path.resolve();
-// PORT should be assigned after calling dotenv.config() because we need to access the env variables. Didn't realize while recording the video. Sorry for the confusion.
 const PORT = process.env.PORT || 5000;
 
-app.use(express.json()); // to parse the incoming requests with JSON payloads (from req.body)
+app.use(express.json());
 app.use(cookieParser());
 
+// CORS Configuration
+const corsOptions = {
+	origin: "http://localhost:3000",
+	methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+	credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+	optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
+
+// Serve static files from the 'public' directory
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
+
+// API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/users", userRoutes);
 
-app.use(express.static(path.join(__dirname, "/frontend/dist")));
-app.use(express.static('public/'))
 app.get("*", (req, res) => {
-	res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
+	res.sendFile(path.join(__dirname, 'frontend/dist', 'index.html'));
 });
 
 server.listen(PORT, () => {
 	connectToMongoDB();
-	console.log(`Server Running on port ${ PORT }`);
+	console.log(`Server running on port ${ PORT }`);
 });

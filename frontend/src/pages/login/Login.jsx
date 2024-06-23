@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useLogin from "../../hooks/useLogin";
 
 const Login = () => {
@@ -8,10 +8,24 @@ const Login = () => {
 
 	const { loading, login } = useLogin();
 
+	const navigate = useNavigate();
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		await login(username, password);
+		const res = await login(username, password);
+		console.log("res",res)
+		if (res) {
+			// Check role and redirect accordingly
+			if (res.role === "ADMIN") {
+				navigate("/dashboard")
+
+				
+			} else {
+				navigate("/")
+
+			}
+		}
 	};
+
 
 	return (
 		<div className='flex flex-col items-center justify-center min-w-96 mx-auto'>
