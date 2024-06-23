@@ -2,67 +2,22 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unknown-property */
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSocketContext } from "../../context/SocketContext";
 import useDeleteUser from "../../hooks/useDeleteUser";
 import useGetConversations from "../../hooks/useGetConversations";
 import DataTable from "./Table";
 
-const mockUsers = [
-    {
-        _id: '667808edd8830a920a09dcf8',
-        fullName: 'admin',
-        username: 'admin1',
-        password: '$2a$10$vqjFTy1nBKQH7mZmZCNJLe9bj57wHMVK326vOa6S0PiOlYmViAihW',
-        gender: 'male',
-        profilePic: 'https://avatar.iran.liara.run/public/boy?username=admin1',
-        role: 'ADMIN',
-        createdAt: '2024-06-23T11:37:17.347+00:00',
-        updatedAt: '2024-06-23T11:37:17.347+00:00',
-      
-    },
-    {
-        _id: '667808edd8830a920a09dcf8',
-        fullName: 'admin',
-        username: 'admin1',
-        password: '$2a$10$vqjFTy1nBKQH7mZmZCNJLe9bj57wHMVK326vOa6S0PiOlYmViAihW',
-        gender: 'male',
-        profilePic: 'https://avatar.iran.liara.run/public/boy?username=admin1',
-        role: 'ADMIN',
-        createdAt: '2024-06-23T11:37:17.347+00:00',
-        updatedAt: '2024-06-23T11:37:17.347+00:00',
-      
-    },
-    {
-        _id: '667808edd8830a920a09dcf8',
-        fullName: 'admin',
-        username: 'admin1',
-        password: '$2a$10$vqjFTy1nBKQH7mZmZCNJLe9bj57wHMVK326vOa6S0PiOlYmViAihW',
-        gender: 'male',
-        profilePic: 'https://avatar.iran.liara.run/public/boy?username=admin1',
-        role: 'ADMIN',
-        createdAt: '2024-06-23T11:37:17.347+00:00',
-        updatedAt: '2024-06-23T11:37:17.347+00:00',
-      
-    }
-];
 
 function ChartsComponent() {
     // const { fetchAllUsers, GetUsers, DeleteUser } = useAuth();
     // const { accessToken, user } = useAuth();
-    const queryClient = useQueryClient();
-    queryClient.invalidateQueries({ queryKey: ['users'] });
-
-    const { data: users = mockUsers, isLoading, error } = useQuery({
-      queryKey: ['users'],
-      queryFn: () => new Promise(resolve => resolve(mockUsers)),
-    });
+  
 
     const { loading, conversations } = useGetConversations();
     const { loading: loadingDelete, deleteConversation } = useDeleteUser();
 
 
-    const { onlineUsers,onlineVisitors } = useSocketContext();
+    const { onlineUsers, } = useSocketContext();
 
 
   const handleDelete =  async (row) => {
@@ -75,7 +30,7 @@ function ChartsComponent() {
     
     const activeUsers = conversations.filter(user => user.isActive === true).length;
     const inactiveUsers = conversations.filter(user => user.isActive === false).length;
-    const latestUsers = users.slice(-4);
+    
 
     const headers = ['_id', 'fullName', 'username', 'gender', 'role', 'createdAt', 'updatedAt'];
 
@@ -141,8 +96,8 @@ function ChartsComponent() {
                         </svg>
                     </span>
                     <div className="flex flex-col items-center justify-center">
-                        <span className="text-3xl">{onlineVisitors.length}</span>
-                        <span className="text-medium">onlineVisitors </span>
+                        <span className="text-3xl">{inactiveUsers.length}</span>
+                        <span className="text-medium">inactiveUsers </span>
                     </div>
                 </div>
             </div>
