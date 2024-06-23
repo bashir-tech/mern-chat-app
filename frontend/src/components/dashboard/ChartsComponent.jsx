@@ -4,6 +4,7 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSocketContext } from "../../context/SocketContext";
+import useDeleteUser from "../../hooks/useDeleteUser";
 import useGetConversations from "../../hooks/useGetConversations";
 import DataTable from "./Table";
 
@@ -57,13 +58,17 @@ function ChartsComponent() {
       queryFn: () => new Promise(resolve => resolve(mockUsers)),
     });
 
-	const { loading, conversations } = useGetConversations();
+    const { loading, conversations } = useGetConversations();
+    const { loading: loadingDelete, deleteConversation } = useDeleteUser();
+
 
 	const { onlineUsers } = useSocketContext();
 
   const handleDelete =  async (row) => {
     console.log("Delete row:", row);
-
+      deleteConversation(row._id
+        
+    )
   };
 
     

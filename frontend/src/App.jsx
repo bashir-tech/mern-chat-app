@@ -29,7 +29,7 @@ function App() {
 				<Route path='/login' element={authUser ? <Navigate to='/' /> : <Login />} />
 				<Route path='/signup' element={authUser ? <Navigate to='/' /> : <SignUp />} />
 				
-				<Route path="dashboard" element={ authUser ?
+				<Route path="/dashboard" element={ authUser ?
                
                   <DashboardPage />:<Navigate to={"/login"} />
                
