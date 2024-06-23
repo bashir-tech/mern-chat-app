@@ -11,11 +11,12 @@ export const useSocketContext = () => {
 export const SocketContextProvider = ({ children }) => {
 	const [socket, setSocket] = useState(null);
 	const [onlineUsers, setOnlineUsers] = useState([]);
+	const [onlineVisitors, setOnlineVisitors] = useState([]);
 	const { authUser } = useAuthContext();
 
 	useEffect(() => {
 		if (authUser) {
-			const socket = io("https://chat-app-zxxt.onrender.com", {
+			const socket = io("http://localhost:3000/", {
 				query: {
 					userId: authUser._id,
 				},
@@ -23,19 +24,40 @@ export const SocketContextProvider = ({ children }) => {
 
 			setSocket(socket);
 
-			// socket.on() is used to listen to the events. can be used both on client and server side
 			socket.on("getOnlineUsers", (users) => {
 				setOnlineUsers(users);
 			});
 
+			socket.on("getOnlineVisitors", (visitors) => {
+				setOnlineVisitors(visitors);
+			});
+
 			return () => socket.close();
 		} else {
-			if (socket) {
-				socket.close();
-				setSocket(null);
-			}
+			const visitorId = `visitor_${Math.random().toString(36).substring(2, 15)}`;
+			const socket = io("http://localhost:3000/", {
+				query: {
+					visitorId,
+				},
+			});
+
+			setSocket(socket);
+
+			socket.on("getOnlineVisitors", (visitors) => {
+				setOnlineVisitors(visitors);
+			});
+
+			console.log("onlıne users:", onlineUsers)
+			console.log("vistors users:",onlineVisitors)
+
+
+			return () => socket.close();
 		}
 	}, [authUser]);
 
-	return <SocketContext.Provider value={{ socket, onlineUsers }}>{children}</SocketContext.Provider>;
+	return (
+		<SocketContext.Provider value={{ socket, onlineUsers, onlineVisitors }}>
+			{children}
+		</SocketContext.Provider>
+	);
 };

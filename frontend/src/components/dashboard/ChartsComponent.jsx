@@ -62,7 +62,8 @@ function ChartsComponent() {
     const { loading: loadingDelete, deleteConversation } = useDeleteUser();
 
 
-	const { onlineUsers } = useSocketContext();
+    const { onlineUsers,onlineVisitors } = useSocketContext();
+
 
   const handleDelete =  async (row) => {
     console.log("Delete row:", row);
@@ -140,8 +141,8 @@ function ChartsComponent() {
                         </svg>
                     </span>
                     <div className="flex flex-col items-center justify-center">
-                        <span className="text-3xl">{inactiveUsers}</span>
-                        <span className="text-medium">Inactive Users</span>
+                        <span className="text-3xl">{onlineVisitors.length}</span>
+                        <span className="text-medium">onlineVisitors </span>
                     </div>
                 </div>
             </div>
