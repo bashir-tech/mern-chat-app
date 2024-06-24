@@ -8,13 +8,13 @@ import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 import userRoutes from "./routes/user.routes.js";
 
+import csurf from "csurf";
 import connectToMongoDB from "./db/connectToMongoDB.js";
 import { app, server } from "./socket/socket.js";
-
-dotenv.config();
+dotenv.config({ path: "../.env" });
 
 const __dirname = path.resolve();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT
 
 app.use(express.json());
 app.use(cookieParser());
@@ -29,6 +29,13 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// CSRF protection middleware
+const csrfProtection = csurf({ cookie: true });
+app.use(csrfProtection);
+
+app.get("/api/csrf-token", (req, res) => {
+	res.json({ csrfToken: req.csrfToken() });
+});
 // Serve static files from the 'public' directory
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
 

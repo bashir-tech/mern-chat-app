@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 const router = express.Router();
 
 // Ensure 'public/images' directory exists
-const imagesDir = path.join(__dirname, '..', 'public/images');
+const imagesDir = path.join(__dirname, '../../frontend', 'public/images');
 if (!fs.existsSync(imagesDir)) {
     fs.mkdirSync(imagesDir, { recursive: true });
     console.log(`Created directory: ${ imagesDir }`);

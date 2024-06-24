@@ -1,16 +1,29 @@
 import { useEffect, useState } from "react";
-import useConversation from "../zustand/useConversation";
 import toast from "react-hot-toast";
+import useConversation from "../zustand/useConversation";
+import useCsrfToken from "./useCsrfToken";
 
 const useGetMessages = () => {
 	const [loading, setLoading] = useState(false);
 	const { messages, setMessages, selectedConversation } = useConversation();
+	const csrfToken = useCsrfToken();
 
 	useEffect(() => {
 		const getMessages = async () => {
 			setLoading(true);
 			try {
-				const res = await fetch(`/api/messages/${selectedConversation._id}`);
+				if (!csrfToken) {
+					throw new Error("CSRF token is not available");
+				}
+
+				const res = await fetch(`/api/messages/${ selectedConversation._id }`, {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRF-Token': csrfToken, // Include CSRF token in headers
+					},
+				});
+
 				const data = await res.json();
 				if (data.error) throw new Error(data.error);
 				setMessages(data);
@@ -21,9 +34,10 @@ const useGetMessages = () => {
 			}
 		};
 
-		if (selectedConversation?._id) getMessages();
-	}, [selectedConversation?._id, setMessages]);
+		if (selectedConversation?._id && csrfToken) getMessages();
+	}, [selectedConversation?._id, setMessages, csrfToken]);
 
 	return { messages, loading };
 };
+
 export default useGetMessages;
