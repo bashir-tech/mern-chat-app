@@ -11,7 +11,7 @@ import userRoutes from "./routes/user.routes.js";
 import csurf from "csurf";
 import connectToMongoDB from "./db/connectToMongoDB.js";
 import { app, server } from "./socket/socket.js";
-dotenv.config({ path: "../.env" });
+dotenv.config({ path: "./.env" });
 
 const __dirname = path.resolve();
 const PORT = process.env.PORT

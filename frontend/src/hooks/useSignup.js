@@ -1,10 +1,12 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useAuthContext } from "../context/AuthContext";
+import useCsrfToken from "./useCsrfToken";
 
 const useSignup = () => {
 	const [loading, setLoading] = useState(false);
 	const { setAuthUser } = useAuthContext();
+	const csrfToken = useCsrfToken();
 
 	const signup = async ({ fullName, username, password, confirmPassword, gender }) => {
 		const success = handleInputErrors({ fullName, username, password, confirmPassword, gender });
@@ -12,9 +14,18 @@ const useSignup = () => {
 
 		setLoading(true);
 		try {
+			if (!csrfToken) {
+				throw new Error("CSRF token is not available");
+			}
+
 			const res = await fetch("/api/auth/signup", {
 				method: "POST",
-				headers: { "Content-Type": "application/json" },
+				headers: {
+					"Content-Type": "application/json",
+					"X-CSRF-Token": csrfToken // Include CSRF token in headers
+
+
+				},
 				body: JSON.stringify({ fullName, username, password, confirmPassword, gender }),
 			});
 
